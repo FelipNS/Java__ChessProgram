@@ -5,10 +5,9 @@ I learn with this project the pillars of Object-Oriented Programming and System 
 
 **Folder Structures:**
 
-:open_file_folder: ChessProgram<br>
-    :open_file_folder: app<br>
-        -> Contains the main method and UI<br>
-    :open_file_folder: boardgame<br>
-        -> Contains the Generic Classes in "lower level" logic.<br>
-    :open_file_folder: chess<br>
-        -> Contains the real Chess Pieces in "high level"logic.
+:open_file_folder: app<br>
+    -> Contains the main method and UI<br>
+:open_file_folder: boardgame<br>
+    -> Contains the Generic Classes in "lower level" logic.<br>
+:open_file_folder: chess<br>
+    -> Contains the real Chess Pieces in "high level"logic.
