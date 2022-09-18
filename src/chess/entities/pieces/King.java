@@ -30,7 +30,42 @@ public class King extends ChessPiece {
             }
         }
 
+        if (getMoveCount() == 0) matrix = castling(matrix);
         return matrix;
     }
 
+    public boolean[][] castling(boolean[][] matrix) {
+        Board board = getBoard();
+        ChessPiece castlingShort = (ChessPiece) board.piece(position.getRow(), 7);
+        ChessPiece castlingLong = (ChessPiece) board.piece(position.getRow(), 0);
+        
+        if (castlingShort instanceof Rook && castlingShort.getMoveCount() == 0) {
+            if (isFreeWay(position.getColumn(), castlingShort.getChessPosition().toPosition().getColumn())) {
+                matrix[position.getRow()][6] = true;
+            };
+        }
+        if (castlingLong instanceof Rook && castlingLong.getMoveCount() == 0) {
+            if (isFreeWay(position.getColumn(), castlingLong.getChessPosition().toPosition().getColumn())) {
+                matrix[position.getRow()][2] = true;
+            };
+        }
+
+        return matrix;
+    }
+
+    private boolean isFreeWay(int kingColumn, int rookColumn) {
+        int first, last;
+
+        if (kingColumn > rookColumn) {
+            first =  rookColumn;
+            last =  kingColumn;            
+        } else {
+            first =  kingColumn;
+            last =  rookColumn;
+        }
+        for (int i = first + 1; i < last; i++) {
+            if (getBoard().thereIsAPiece(new Position(position.getRow(), i))) return false;
+        }
+        return true;
+    }
 }
