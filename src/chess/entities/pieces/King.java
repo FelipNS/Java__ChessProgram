@@ -34,7 +34,7 @@ public class King extends ChessPiece {
         return matrix;
     }
 
-    public boolean[][] castling(boolean[][] matrix) {
+    private boolean[][] castling(boolean[][] matrix) {
         Board board = getBoard();
         ChessPiece castlingShort = (ChessPiece) board.piece(position.getRow(), 7);
         ChessPiece castlingLong = (ChessPiece) board.piece(position.getRow(), 0);
