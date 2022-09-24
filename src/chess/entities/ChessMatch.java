@@ -18,13 +18,13 @@ public class ChessMatch {
     private boolean checkMate;
     protected ChessPiece enPassantVulnerable;
 
-    private List<ChessPiece> piecesOnTheBoard = new ArrayList<>();
-    private List<ChessPiece> capturedPieces = new ArrayList<>();
+    protected List<ChessPiece> piecesOnTheBoard = new ArrayList<>();
+    protected List<ChessPiece> capturedPieces = new ArrayList<>();
     
     public ChessMatch() {
         board = new Board(8, 8);
         turn = 1;
-        currentPlayer = Color.WHITE;
+        currentPlayer = Color.BLACK;
         initialSetup();
     }
 
@@ -146,6 +146,9 @@ public class ChessMatch {
 
         //SPECIAL MOVE - CASTLING
         ChessSpecialMoves.undoCastling(this, currentPiece, target);
+
+        //SPECIAL MOVE - EN PASSANT
+        ChessSpecialMoves.undoEnPassant(this, source, capturedPiece, target);
     }
 
     private void placeNewPiece(char column, int row, ChessPiece piece) {
@@ -257,7 +260,8 @@ public class ChessMatch {
         placeNewPiece('e', 2, new Pawn(board, Color.WHITE, this));
         placeNewPiece('g', 5, new Pawn(board, Color.WHITE, this));
 
-        placeNewPiece('a', 8, new King(board, Color.BLACK));
+        placeNewPiece('a', 8, new Rook(board, Color.BLACK));
+        placeNewPiece('b', 8, new King(board, Color.BLACK));
         placeNewPiece('b', 7, new Pawn(board, Color.BLACK, this));
         placeNewPiece('d', 4, new Pawn(board, Color.BLACK, this));
         placeNewPiece('f', 7, new Pawn(board, Color.BLACK, this));

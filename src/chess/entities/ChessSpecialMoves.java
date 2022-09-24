@@ -53,7 +53,7 @@ public class ChessSpecialMoves {
                     if (match.board.positionExists(asideColumn) && match.board.piece(asideColumn) instanceof Pawn) {
                         return piece;
                     }
-            }
+                }
             }
         }
         return null;
@@ -62,9 +62,21 @@ public class ChessSpecialMoves {
     public static ChessPiece makeEnPassant(ChessMatch match, Position target) {
         int rowToCapture = target.getRow() == 5 ? 4 : 3;
         ChessPiece piece = (ChessPiece) match.board.piece(rowToCapture, target.getColumn());
-        if (match.getEnPassantVulnerable().equals(piece)) return (ChessPiece) match.board.removePiece(piece.getChessPosition().toPosition());
-        ;
-
+        if (match.getEnPassantVulnerable().equals(piece)) {
+            return (ChessPiece) match.board.removePiece(piece.getChessPosition().toPosition());
+        }
         return null;
+    }
+
+    public static void undoEnPassant(ChessMatch match, Position source, ChessPiece capturedPawn, Position target) {
+        Position initialPos = capturedPawn.getChessPosition().toPosition(); 
+        if (capturedPawn instanceof Pawn) {
+            match.board.placePiece(capturedPawn, initialPos);
+            if (match.board.piece(target) instanceof Pawn) {
+                match.board.placePiece(match.board.piece(target), source);
+                match.capturedPieces.remove(capturedPawn);
+                match.piecesOnTheBoard.add(capturedPawn);
+            }
+        }
     }
 }
