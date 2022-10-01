@@ -36,6 +36,12 @@ public class App {
                 
                 ChessPiece capturedPiece = match.performChessMove(source, target);
                 if (capturedPiece != null) { capturedPieces.add(capturedPiece); }
+                
+                if (match.getPromoted() != null) {
+                    System.out.println("Which piece do you want?[Q, N, R, B]");
+                    match.replacePromotedPiece(sc.nextLine(), target);
+                    
+                }
                 System.out.println();
             } catch (ChessException e) {
                 System.out.println(e.getMessage());

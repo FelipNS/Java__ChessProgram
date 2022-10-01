@@ -17,6 +17,7 @@ public class ChessMatch {
     private boolean check;
     private boolean checkMate;
     protected ChessPiece enPassantVulnerable;
+    protected ChessPiece promoted;
 
     protected List<ChessPiece> piecesOnTheBoard = new ArrayList<>();
     protected List<ChessPiece> capturedPieces = new ArrayList<>();
@@ -24,7 +25,7 @@ public class ChessMatch {
     public ChessMatch() {
         board = new Board(8, 8);
         turn = 1;
-        currentPlayer = Color.BLACK;
+        currentPlayer = Color.WHITE;
         initialSetup();
     }
 
@@ -58,6 +59,10 @@ public class ChessMatch {
         return enPassantVulnerable;
     }
 
+    public ChessPiece getPromoted() {
+        return promoted;
+    }
+
     private void nextTurn() {
         turn++;
         currentPlayer = currentPlayer == Color.WHITE ? Color.BLACK : Color.WHITE;
@@ -82,7 +87,11 @@ public class ChessMatch {
             undoMove(source, target, capturedPiece);
             throw new ChessException("You can't put yourself in check!");
         }
+
+        ChessSpecialMoves.pawnToPromotion(this, target);
+
         check = isCheck(opponent(currentPlayer)) ? true : false;
+
         if (isCheckMate(opponent(currentPlayer))) {
             checkMate = true;
         } else {
@@ -97,6 +106,11 @@ public class ChessMatch {
 
         return (ChessPiece) capturedPiece;
     }
+
+    public void replacePromotedPiece(String type, ChessPosition target) {
+        ChessSpecialMoves.replacePromotedPiece(this, type, target);
+        check = isCheck(currentPlayer) ? true : false;
+    } 
 
     public void validateSourcePosition(Position pos) {
         ChessPiece piece = (ChessPiece) board.piece(pos); 
@@ -216,55 +230,41 @@ public class ChessMatch {
     }
 
     private void initialSetup() {
-        /*{
-            placeNewPiece('a', 1, new Rook(board, Color.WHITE));
-            placeNewPiece('b', 1, new Knight(board, Color.WHITE));
-            placeNewPiece('c', 1, new Bishop(board, Color.WHITE));
-            placeNewPiece('e', 1, new King(board, Color.WHITE));
-            placeNewPiece('d', 1, new Queen(board, Color.WHITE));
-            placeNewPiece('f', 1, new Bishop(board, Color.WHITE));
-            placeNewPiece('g', 1, new Knight(board, Color.WHITE));
-            placeNewPiece('h', 1, new Rook(board, Color.WHITE));
-            
-            placeNewPiece('a', 2, new Pawn(board, Color.WHITE, this));
-            placeNewPiece('b', 2, new Pawn(board, Color.WHITE, this));
-            placeNewPiece('c', 2, new Pawn(board, Color.WHITE, this));
-            placeNewPiece('d', 2, new Pawn(board, Color.WHITE, this));
-            placeNewPiece('e', 2, new Pawn(board, Color.WHITE, this));
-            placeNewPiece('f', 2, new Pawn(board, Color.WHITE, this));
-            placeNewPiece('g', 2, new Pawn(board, Color.WHITE, this));
-            placeNewPiece('h', 2, new Pawn(board, Color.WHITE, this));
-            
-            
-            placeNewPiece('a', 8, new Rook(board, Color.BLACK));
-            placeNewPiece('b', 8, new Knight(board, Color.BLACK));
-            placeNewPiece('c', 8, new Bishop(board, Color.BLACK));
-            placeNewPiece('e', 8, new King(board, Color.BLACK));
-            placeNewPiece('d', 8, new Queen(board, Color.BLACK));
-            placeNewPiece('f', 8, new Bishop(board, Color.BLACK));
-            placeNewPiece('g', 8, new Knight(board, Color.BLACK));
-            placeNewPiece('h', 8, new Rook(board, Color.BLACK));
-
-            placeNewPiece('a', 7, new Pawn(board, Color.BLACK, this));
-            placeNewPiece('b', 7, new Pawn(board, Color.BLACK, this));
-            placeNewPiece('c', 7, new Pawn(board, Color.BLACK, this));
-            placeNewPiece('d', 7, new Pawn(board, Color.BLACK, this));
-            placeNewPiece('e', 7, new Pawn(board, Color.BLACK, this));
-            placeNewPiece('f', 7, new Pawn(board, Color.BLACK, this));
-            placeNewPiece('g', 7, new Pawn(board, Color.BLACK, this));
-            placeNewPiece('h', 7, new Pawn(board, Color.BLACK, this));
-        }*/
-    
-        placeNewPiece('a', 1, new King(board, Color.WHITE));
-        placeNewPiece('a', 5, new Pawn(board, Color.WHITE, this));
+        placeNewPiece('a', 1, new Rook(board, Color.WHITE));
+        placeNewPiece('b', 1, new Knight(board, Color.WHITE));
+        placeNewPiece('c', 1, new Bishop(board, Color.WHITE));
+        placeNewPiece('e', 1, new King(board, Color.WHITE));
+        placeNewPiece('d', 1, new Queen(board, Color.WHITE));
+        placeNewPiece('f', 1, new Bishop(board, Color.WHITE));
+        placeNewPiece('g', 1, new Knight(board, Color.WHITE));
+        placeNewPiece('h', 1, new Rook(board, Color.WHITE));
+        
+        placeNewPiece('a', 2, new Pawn(board, Color.WHITE, this));
+        placeNewPiece('b', 2, new Pawn(board, Color.WHITE, this));
+        placeNewPiece('c', 2, new Pawn(board, Color.WHITE, this));
+        placeNewPiece('d', 2, new Pawn(board, Color.WHITE, this));
         placeNewPiece('e', 2, new Pawn(board, Color.WHITE, this));
-        placeNewPiece('g', 5, new Pawn(board, Color.WHITE, this));
-
+        placeNewPiece('f', 2, new Pawn(board, Color.WHITE, this));
+        placeNewPiece('g', 2, new Pawn(board, Color.WHITE, this));
+        placeNewPiece('h', 2, new Pawn(board, Color.WHITE, this));
+        
+        
         placeNewPiece('a', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('b', 8, new King(board, Color.BLACK));
+        placeNewPiece('b', 8, new Knight(board, Color.BLACK));
+        placeNewPiece('c', 8, new Bishop(board, Color.BLACK));
+        placeNewPiece('e', 8, new King(board, Color.BLACK));
+        placeNewPiece('d', 8, new Queen(board, Color.BLACK));
+        placeNewPiece('f', 8, new Bishop(board, Color.BLACK));
+        placeNewPiece('g', 8, new Knight(board, Color.BLACK));
+        placeNewPiece('h', 8, new Rook(board, Color.BLACK));
+
+        placeNewPiece('a', 7, new Pawn(board, Color.BLACK, this));
         placeNewPiece('b', 7, new Pawn(board, Color.BLACK, this));
-        placeNewPiece('d', 4, new Pawn(board, Color.BLACK, this));
+        placeNewPiece('c', 7, new Pawn(board, Color.BLACK, this));
+        placeNewPiece('d', 7, new Pawn(board, Color.BLACK, this));
+        placeNewPiece('e', 7, new Pawn(board, Color.BLACK, this));
         placeNewPiece('f', 7, new Pawn(board, Color.BLACK, this));
+        placeNewPiece('g', 7, new Pawn(board, Color.BLACK, this));
         placeNewPiece('h', 7, new Pawn(board, Color.BLACK, this));
-    }    
+    }   
 }

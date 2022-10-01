@@ -1,8 +1,14 @@
 package chess.entities;
 
+import java.security.InvalidParameterException;
+
 import boardgame.entities.Position;
+import chess.entities.pieces.Bishop;
 import chess.entities.pieces.King;
+import chess.entities.pieces.Knight;
 import chess.entities.pieces.Pawn;
+import chess.entities.pieces.Queen;
+import chess.entities.pieces.Rook;
 import chess.enums.Color;
 
 public class ChessSpecialMoves {
@@ -74,9 +80,45 @@ public class ChessSpecialMoves {
             match.board.placePiece(capturedPawn, initialPos);
             if (match.board.piece(target) instanceof Pawn) {
                 match.board.placePiece(match.board.piece(target), source);
-                match.capturedPieces.remove(capturedPawn);
-                match.piecesOnTheBoard.add(capturedPawn);
             }
         }
+    }
+
+    public static void pawnToPromotion(ChessMatch match, Position target) {
+        ChessPiece movedPiece = (ChessPiece) match.board.piece(target);
+
+        match.promoted = null;
+        if (movedPiece instanceof Pawn) {
+            if ((movedPiece.getChessPosition().getRow() == 1) || (movedPiece.getChessPosition().getRow() == 8)) {
+                match.promoted = movedPiece;
+                match.board.removePiece(movedPiece.getChessPosition().toPosition());
+                match.piecesOnTheBoard.remove(movedPiece);
+            }
+        }
+    }
+
+    public static void replacePromotedPiece(ChessMatch match, String type, ChessPosition target) {
+        
+        ChessPiece pawn = match.getPromoted();
+        ChessPiece newPiece = null;
+        match.board.removePiece(pawn.getChessPosition().toPosition());
+        switch (type.toUpperCase()) {
+            case "Q":
+                newPiece = new Queen(match.board, pawn.getColor());
+                break;
+            case "N":
+                newPiece = new Knight(match.board, pawn.getColor());
+                break;
+            case "R":
+                newPiece = new Rook(match.board, pawn.getColor());
+                break;
+            case "B":
+                newPiece = new Bishop(match.board, pawn.getColor());
+                break;
+            default:
+                throw new InvalidParameterException("This isn't valid piece");
+        }
+        match.board.placePiece(newPiece, target.toPosition());
+        match.piecesOnTheBoard.add(newPiece);
     }
 }
